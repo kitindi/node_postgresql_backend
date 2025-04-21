@@ -32,6 +32,21 @@ export const getProduct = async (req, res) => {
   }
 };
 
+// GET -products by category id
+
+export const getProductsByCategory = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query("SELECT * FROM product WHERE category_id = $1", [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "No products found for this category" });
+    }
+    return res.status(200).json(result.rows);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 // POST : Create new product /products
 
 export const createProduct = async (req, res) => {
@@ -49,6 +64,12 @@ export const createProduct = async (req, res) => {
     }
     if (!category_id) {
       return res.status(204).json({ message: "Product category is required" });
+    }
+
+    // check if category id  exists
+    const categoryExists = await pool.query("SELECT * FROM category WHERE id = $1", [category_id]);
+    if (categoryExists.rows.length === 0) {
+      return res.status(409).json({ message: "Category does not exist" });
     }
 
     const result = await pool.query("INSERT INTO product (name, description, price, quantity,category_id) values ($1, $2, $3, $4,$5) RETURNING *", [

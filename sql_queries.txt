@@ -30,3 +30,7 @@ VALUES (
 'Node.js book','Node.js book description ...',90, 5, 2)
 
 SELECT * FROM product
+
+SELECT product.name, product.price, category.name FROM product INNER JOIN category ON category.id = product.category_id
+SELECT * FROM product
+INSERT INTO product (name, description, price, quantity, category_id) VALUES ('Undertand RESTful API with node.js','Node.js API design',80,10,2)
